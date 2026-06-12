@@ -6,8 +6,6 @@ import { Dashboard } from './pages/Dashboard';
 import { MissionPlanner } from './pages/MissionPlanner';
 import { Timeline } from './pages/Timeline';
 import { Learn } from './pages/Learn';
-import { Capabilities } from './pages/Capabilities';
-
 
 function App() {
   // Generate a fixed number of falling cherry blossom petals with distinct parameters
@@ -50,7 +48,6 @@ function App() {
               <Route path="/planner" element={<MissionPlanner />} />
               <Route path="/timeline" element={<Timeline />} />
               <Route path="/learn" element={<Learn />} />
-              <Route path="/capabilities" element={<Capabilities />} />
             </Routes>
           </main>
           
