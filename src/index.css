@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-spaceBg text-gray-200 overflow-x-hidden font-sans;
+    background-image: 
+      linear-gradient(to right, rgba(46, 58, 78, 0.15) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(46, 58, 78, 0.15) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+}
+
+/* Custom Scrollbar for Mission Control Aesthetic */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B0C10;
+  border-left: 1px solid #2E3A4E;
+}
+::-webkit-scrollbar-thumb {
+  background: #2E3A4E;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #66FCF1; /* Xenon Ice Blue */
+}
+
+/* Aerospace panel borders and blinking status indicator animation */
+@keyframes blink-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.animate-blink-slow {
+  animation: blink-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Radar ping animation */
+@keyframes radar-pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.radar-ping {
+  animation: radar-pulse 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Cherry Blossom Falling Petal Animation */
+.sakura-petal {
+  position: absolute;
+  width: 10px;
+  height: 14px;
+  background-color: #FDA4AF; /* Soft Sakura Pink */
+  border-radius: 12px 1px 12px 12px;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes fall-1 {
+  0% {
+    transform: translateY(-20px) rotate(0deg) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.4;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(105vh) rotate(360deg) translateX(120px);
+    opacity: 0;
+  }
+}
+
+@keyframes fall-2 {
+  0% {
+    transform: translateY(-20px) rotate(0deg) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.3;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateY(105vh) rotate(-360deg) translateX(-100px);
+    opacity: 0;
+  }
+}
+
+.animate-sakura-1 {
+  animation: fall-1 12s linear infinite;
+}
+
+.animate-sakura-2 {
+  animation: fall-2 16s linear infinite;
+}
+
+/* Leaflet Dark styling adjustments */
+.leaflet-container {
+  background-color: #0B0C10 !important;
+}
+
+.leaflet-tile {
+  filter: grayscale(100%) invert(100%) contrast(90%) brightness(70%);
+}
+
+.leaflet-bar {
+  border: 1px solid #2E3A4E !important;
+  box-shadow: none !important;
+}
+
+.leaflet-bar a {
+  background-color: #1F2833 !important;
+  color: #66FCF1 !important;
+  border-bottom: 1px solid #2E3A4E !important;
+}
+
+.leaflet-bar a:hover {
+  background-color: #2E3A4E !important;
+  color: #FFFFFF !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #1F2833 !important;
+  color: #E5E7EB !important;
+  border: 1px solid #2E3A4E !important;
+  border-radius: 0px !important;
+}
+
+.leaflet-popup-tip {
+  background: #1F2833 !important;
+  border: 1px solid #2E3A4E !important;
+}
+
+/* Custom classes for aerospace panels */
+.panel-grid-border {
+  border: 1px solid #2E3A4E;
+  position: relative;
+}
+
+.panel-grid-border::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 4px;
+  border-top: 2px solid #66FCF1; /* Xenon Ice Blue */
+  border-left: 2px solid #66FCF1;
+}
+
+.panel-grid-border::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 4px;
+  height: 4px;
+  border-bottom: 2px solid #66FCF1;
+  border-right: 2px solid #66FCF1;
+}
