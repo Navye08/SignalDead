@@ -1,4 +1,3 @@
-import React from 'react';
 import { RiskBadge } from './RiskBadge';
 import { Activity, ShieldCheck, AlertTriangle, Radio } from 'lucide-react';
 
@@ -11,14 +10,14 @@ interface StatusCardProps {
   lastUpdated: string;
 }
 
-export const StatusCard: React.FC<StatusCardProps> = ({
+export const StatusCard = ({
   status,
   kpIndex,
   satellites,
   pdop,
   accuracy,
   lastUpdated
-}) => {
+}: StatusCardProps) => {
   let mainIcon = <ShieldCheck className="w-12 h-12 text-spaceSafe" />;
   let cardTitle = 'SYSTEM NOMINAL';
   let cardDesc = 'GPS reliability is high across India. Scintillation activity is low.';
@@ -67,7 +66,9 @@ export const StatusCard: React.FC<StatusCardProps> = ({
         <div className="grid grid-cols-2 gap-x-8 gap-y-2 border-t md:border-t-0 md:border-l border-spaceBorder pt-4 md:pt-0 md:pl-8 font-mono text-xs">
           <div className="flex justify-between gap-4">
             <span className="text-gray-500">KP INDEX:</span>
-            <span className="text-white font-bold">{kpIndex}</span>
+            <span className={`font-bold ${kpIndex >= 7 ? 'glitch-text text-spaceDanger font-extrabold' : 'text-white'}`}>
+              {kpIndex}
+            </span>
           </div>
           <div className="flex justify-between gap-4">
             <span className="text-gray-500">ACCURACY:</span>

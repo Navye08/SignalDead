@@ -1,201 +1,281 @@
-import React from 'react';
+import { useState } from 'react';
 import { StatusCard } from '../components/StatusCard';
-import { MetricCard } from '../components/MetricCard';
 import { Heatmap } from '../components/Heatmap';
 import { PageHeader } from '../components/PageHeader';
-import { getLiveTelemetry } from '../services/mockData';
+import { MissionAdvisory } from '../components/MissionAdvisory';
+import { indianCities } from '../services/mockData';
+import type { CityData } from '../services/mockData';
 import { 
-  Compass, 
   Satellite, 
-  Activity, 
-  Gauge, 
   Sun, 
-  Navigation 
+  Navigation,
+  Search,
+  Locate,
+  AlertOctagon
 } from 'lucide-react';
 
-export const Dashboard: React.FC = () => {
-  const telemetry = getLiveTelemetry();
+export const Dashboard = () => {
+  const [activeCity, setActiveCity] = useState<CityData>(indianCities[0]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [locationStatus, setLocationStatus] = useState<'IDLE' | 'LOCKING' | 'LOCKED'>('LOCKED');
+  const [searchResults, setSearchResults] = useState<CityData[]>([]);
 
-  // Recommendations based on current state
-  const getDashboardRecommendations = (risk: 'SAFE' | 'DEGRADED' | 'HIGH RISK') => {
-    switch (risk) {
-      case 'SAFE':
-        return [
-          { category: 'DRONE FLIGHTS', action: 'AUTHORIZED', desc: 'GPS accuracy is within nominal tolerances. Auto-return home and precision hover functions functional.', color: 'text-spaceSafe border-spaceSafe' },
-          { category: 'LAND SURVEYS', action: 'RECOMMENDED', desc: 'Optimal time for high-precision surveying. PDOP levels are at baseline minimums.', color: 'text-spaceSafe border-spaceSafe' },
-          { category: 'NavIC RECEIVERS', action: 'NOMINAL', desc: 'Equatorial plasma delay is fully compensated by dual-band receivers.', color: 'text-spaceSafe border-spaceSafe' }
-        ];
-      case 'DEGRADED':
-        return [
-          { category: 'DRONE FLIGHTS', action: 'CAUTION', desc: 'Increased drift probability. Maintain manual line of sight and disable autonomous waypoint tracking.', color: 'text-spaceWarning border-spaceWarning' },
-          { category: 'LAND SURVEYS', action: 'DELAY ADVISED', desc: 'Satellite triangulation accuracy degraded. Postpone centimeter-level RTK measurements if possible.', color: 'text-spaceWarning border-spaceWarning' },
-          { category: 'SYSTEM LINK', action: 'CHECK CALIBRATION', desc: 'Confirm multi-constellation fallback tracking is enabled to mitigate signal noise.', color: 'text-spaceWarning border-spaceWarning' }
-        ];
-      case 'HIGH RISK':
-        return [
-          { category: 'DRONE FLIGHTS', action: 'NO-GO', desc: 'High risk of fly-aways due to geomagnetic storm scintillation. Ground all autonomous operations.', color: 'text-spaceDanger border-spaceDanger' },
-          { category: 'AVIATION & RTK', action: 'WARNING', desc: 'Severe ionospheric disturbances. GPS signal lockouts are occurring over coastal and southern sectors.', color: 'text-spaceDanger border-spaceDanger' },
-          { category: 'SOLAR RADIATION', action: 'ACTIVE STORM', desc: 'Geomagnetic Kp > 6. Expect absolute signal loss or positioning offsets up to 100 meters.', color: 'text-spaceDanger border-spaceDanger' }
-        ];
+  // Filter autocomplete results
+  const handleSearchChange = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim() === '') {
+      setSearchResults([]);
+    } else {
+      const matches = indianCities.filter(c => 
+        c.name.toLowerCase().includes(query.toLowerCase())
+      );
+      setSearchResults(matches);
     }
   };
 
-  const dashboardRecs = getDashboardRecommendations(telemetry.riskLevel);
+  const handleSelectCity = (city: CityData) => {
+    setActiveCity(city);
+    setSearchQuery(city.name);
+    setSearchResults([]);
+    setLocationStatus('LOCKED');
+  };
+
+  // Mock navigator geo-location lock
+  const handleCurrentLocationLock = () => {
+    setLocationStatus('LOCKING');
+    setTimeout(() => {
+      // Lock onto Bengaluru (default geo location hub)
+      const blr = indianCities.find(c => c.name === 'Bengaluru') || indianCities[0];
+      setActiveCity(blr);
+      setSearchQuery(blr.name);
+      setLocationStatus('LOCKED');
+    }, 600);
+  };
+
+  // Derive extra telemetry values from city data
+  const accuracy = Number((1.5 + (activeCity.riskScore / 100) * 15).toFixed(1));
+  const pdop = Number((1.2 + (12 - activeCity.satellites) * 0.3).toFixed(1));
+  const lastUpdated = new Date().toLocaleTimeString();
+
+  // Dynamic Ambient Page Theme classes based on the risk score
+  const isHighRisk = activeCity.currentRisk === 'HIGH RISK';
+  const isDegraded = activeCity.currentRisk === 'DEGRADED';
+  
+  let dashboardThemeClass = 'border-spaceBorder/50 shadow-[inset_0_0_30px_rgba(0,229,255,0.03)] ring-1 ring-spaceSafe/5';
+  let scanlineBgClass = 'bg-spaceSafe';
+  
+  if (isHighRisk) {
+    dashboardThemeClass = 'border-spaceDanger/40 shadow-[inset_0_0_50px_rgba(230,57,70,0.12)] ring-1 ring-spaceDanger/20';
+    scanlineBgClass = 'bg-spaceDanger animate-pulse';
+  } else if (isDegraded) {
+    dashboardThemeClass = 'border-spaceWarning/30 shadow-[inset_0_0_40px_rgba(255,179,0,0.06)] ring-1 ring-spaceWarning/10';
+    scanlineBgClass = 'bg-spaceWarning';
+  }
 
   return (
-    <div className="space-y-8">
-      <PageHeader 
-        title="Mission Telemetry" 
-        subtitle="Real-time space weather data, satellite constellation configuration, and GNSS accuracy deviation indices over the Indian airspace."
-        category="DASHBOARD COMMAND // TELEMETRY HUD"
-      />
+    <div className={`space-y-8 p-4 sm:p-6 border transition-all duration-300 relative overflow-hidden rounded-none ${dashboardThemeClass}`}>
+      {/* Dynamic Ambient Scanline Overlay */}
+      <div className={`absolute inset-0 pointer-events-none opacity-[0.02] z-0 ${scanlineBgClass}`} style={{
+        backgroundImage: 'linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06))',
+        backgroundSize: '100% 4px, 6px 100%'
+      }} />
+
+      {/* Top Banner Warning if High Risk */}
+      {isHighRisk && (
+        <div className="bg-spaceDanger/15 border border-spaceDanger p-4 flex items-center gap-3 animate-pulse relative z-10">
+          <AlertOctagon className="w-5 h-5 text-spaceDanger" />
+          <span className="font-mono text-xs font-bold text-spaceDanger uppercase tracking-widest">
+            CRITICAL EVENT ACTIVE: STATION {activeCity.name.toUpperCase()} SCINTILLATION RISK EXCEEDS 75%
+          </span>
+        </div>
+      )}
+
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+        <PageHeader 
+          title="Mission Telemetry" 
+          subtitle="Real-time space weather data, satellite constellation configuration, and GNSS accuracy deviation indices over the Indian airspace."
+          category="DASHBOARD COMMAND // TELEMETRY HUD"
+        />
+
+        {/* Top Search & Navigation Fields */}
+        <div className="relative w-full md:w-80 flex gap-2">
+          <div className="relative flex-grow">
+            <input
+              type="text"
+              placeholder="Search target station..."
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="w-full bg-spaceCard border border-spaceBorder p-2.5 pl-9 font-mono text-xs text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none"
+            />
+            <Search className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
+            
+            {/* Search Dropdown Matches */}
+            {searchResults.length > 0 && (
+              <div className="absolute left-0 right-0 mt-1 bg-spaceBg border border-spaceBorder z-50 font-mono text-xs divide-y divide-spaceBorder">
+                {searchResults.map(match => (
+                  <button
+                    key={match.name}
+                    onClick={() => handleSelectCity(match)}
+                    className="w-full text-left p-2.5 hover:bg-spaceCard text-white transition-colors block"
+                  >
+                    {match.name} ({match.currentRisk})
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Use GPS Location Button */}
+          <button
+            onClick={handleCurrentLocationLock}
+            disabled={locationStatus === 'LOCKING'}
+            className="bg-spaceCard border border-spaceBorder p-2.5 text-spaceSafe hover:text-sakuraPink hover:border-sakuraPink transition-all duration-200 cursor-pointer disabled:opacity-50"
+            title="Lock Current Location"
+          >
+            <Locate className={`w-4 h-4 ${locationStatus === 'LOCKING' ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+      </div>
 
       {/* Main Status Panel */}
-      <StatusCard 
-        status={telemetry.riskLevel}
-        kpIndex={telemetry.kpIndex}
-        satellites={telemetry.satellites}
-        pdop={telemetry.pdop}
-        accuracy={telemetry.accuracy}
-        lastUpdated={telemetry.lastUpdated}
-      />
-
-      {/* Telemetry Metric Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-        <MetricCard
-          title="ACCURACY DRIFT"
-          value={`~${telemetry.accuracy}`}
-          unit="MTRS"
-          status="SAFE"
-          icon={<Compass className="w-4 h-4" />}
-          description="GPS L1 NOMINAL ACCURACY"
-        />
-        <MetricCard
-          title="GEOMAGNETIC INDEX"
-          value={telemetry.kpIndex}
-          unit="KP"
-          status={telemetry.kpIndex >= 5 ? 'DANGER' : telemetry.kpIndex >= 4 ? 'WARNING' : 'SAFE'}
-          icon={<Sun className="w-4 h-4" />}
-          description="SOLAR STORM MAGNITUDE"
-        />
-        <MetricCard
-          title="VISIBLE SATS"
-          value={telemetry.satellites}
-          unit="SATS"
-          status={telemetry.satellites <= 6 ? 'WARNING' : 'SAFE'}
-          icon={<Satellite className="w-4 h-4" />}
-          description="GPS + NavIC CONSTELLATION"
-        />
-        <MetricCard
-          title="POSITION DILUTION"
-          value={telemetry.pdop}
-          unit="PDOP"
-          status={telemetry.pdop >= 3.0 ? 'WARNING' : 'SAFE'}
-          icon={<Navigation className="w-4 h-4" />}
-          description="TRIANGULATION GEOMETRY"
-        />
-        <MetricCard
-          title="ELECTRON FLUX FLOW"
-          value="48.2"
-          unit="TECU"
-          status="NEUTRAL"
-          icon={<Activity className="w-4 h-4" />}
-          description="IONOSPHERIC CHARGE"
-        />
-        <MetricCard
-          title="THERMAL ENERGY CONSTANT"
-          value="412"
-          unit="ppm"
-          status="NEUTRAL"
-          icon={<Gauge className="w-4 h-4" />}
-          description="IONIZED PROPULSION PARTICLES"
+      <div className="relative z-10">
+        <StatusCard 
+          status={activeCity.currentRisk}
+          kpIndex={activeCity.kpIndex}
+          satellites={activeCity.satellites}
+          pdop={pdop}
+          accuracy={accuracy}
+          lastUpdated={lastUpdated}
         />
       </div>
 
-      {/* Middle Section: Recommendations + Telemetry Status Feed */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Risk Recommendations Column */}
-        <div className="lg:col-span-2 bg-spaceCard border border-spaceBorder p-6 flex flex-col justify-between">
-          <div>
-            <div className="border-b border-spaceBorder pb-3 mb-4">
-              <span className="text-[10px] font-mono tracking-widest text-spaceAccent block uppercase">
-                FLIGHT DIRECTORY LOG
-              </span>
-              <h3 className="text-base font-mono font-bold text-white uppercase">
-                Operational Recommendations
-              </h3>
-            </div>
-            
-            <div className="space-y-4">
-              {dashboardRecs.map((rec) => (
-                <div key={rec.category} className="border border-spaceBorder p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div>
-                    <span className="font-mono text-[10px] text-gray-500 block">MISSION AREA</span>
-                    <span className="font-mono text-xs font-bold text-white uppercase">{rec.category}</span>
-                  </div>
-                  <div className="flex-1 sm:px-4">
-                    <p className="text-xs text-gray-400">{rec.desc}</p>
-                  </div>
-                  <div className="text-right">
-                    <span className={`inline-block border text-[10px] font-mono font-bold px-2 py-0.5 uppercase ${rec.color}`}>
-                      {rec.action}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+      {/* THREE-COLUMN TELEMETRY GRID (Raw Data Readout in JetBrains Mono) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono relative z-10">
+        {/* Kp Index Telemetry box */}
+        <div className="bg-spaceCard border border-spaceBorder p-5 relative">
+          <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-sakuraPink" />
+          <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-sakuraPink" />
+          
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-[9px] text-gray-500 tracking-wider">GEOMAGNETIC_STATE // SEC_01</span>
+            <Sun className="w-4 h-4 text-spaceAccent" />
           </div>
           
-          <div className="border-t border-spaceBorder mt-6 pt-4 text-[9px] font-mono text-gray-600 flex justify-between">
-            <span>SECURE CRYPTO LINK VALIDATED</span>
-            <span>SYSTEM ENVELOPE: 99.4%</span>
+          <div className="my-2">
+            <span className={`text-5xl font-bold tracking-tight block ${
+              activeCity.kpIndex >= 7 ? 'glitch-text text-spaceDanger' : activeCity.kpIndex >= 5 ? 'text-spaceWarning' : 'text-white'
+            }`} style={{
+              textShadow: activeCity.kpIndex >= 7 
+                ? '0 0 10px rgba(230, 57, 70, 0.6)' 
+                : activeCity.kpIndex >= 5 
+                ? '0 0 8px rgba(255, 179, 0, 0.5)' 
+                : 'none'
+            }}>
+              {activeCity.kpIndex} <span className="text-xs text-gray-500 font-normal">KP</span>
+            </span>
           </div>
+          <span className="text-[9px] text-gray-400 block mt-2">// SOLAR FLUX CONSTANT RADAR</span>
         </div>
 
-        {/* Telemetry Status Feed */}
-        <div className="bg-spaceCard border border-spaceBorder p-6 flex flex-col justify-between">
+        {/* Satellites Overhead Telemetry box */}
+        <div className="bg-spaceCard border border-spaceBorder p-5 relative">
+          <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-sakuraPink" />
+          <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-sakuraPink" />
+
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-[9px] text-gray-500 tracking-wider">VISIBLE_GNSS_ARRAY // SEC_02</span>
+            <Satellite className="w-4 h-4 text-spaceSafe" />
+          </div>
+
+          <div className="my-2">
+            <span className="text-5xl font-bold tracking-tight text-spaceSafe block">
+              {activeCity.satellites} <span className="text-xs text-gray-500 font-normal">SATS</span>
+            </span>
+          </div>
+          <span className="text-[9px] text-gray-400 block mt-2">// MULTI-CONSTELLATION OVERHEAD</span>
+        </div>
+
+        {/* Position Dilution Telemetry box */}
+        <div className="bg-spaceCard border border-spaceBorder p-5 relative">
+          <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-sakuraPink" />
+          <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-sakuraPink" />
+
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-[9px] text-gray-500 tracking-wider">TRIANGULATION_GEOMETRY // SEC_03</span>
+            <Navigation className="w-4 h-4 text-spaceAccent" />
+          </div>
+
+          <div className="my-2">
+            <span className="text-5xl font-bold tracking-tight text-white block">
+              {pdop} <span className="text-xs text-gray-500 font-normal">PDOP</span>
+            </span>
+          </div>
+          <span className="text-[9px] text-gray-400 block mt-2">// POSITIONAL ACCURACY COEFFICIENT</span>
+        </div>
+      </div>
+
+      {/* Main Grid: Metrics + Recommendations (Mission Advisory) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative z-10">
+        {/* Mission Advisory (Data in Plain English) */}
+        <div className="lg:col-span-2">
+          <MissionAdvisory 
+            currentRisk={activeCity.currentRisk} 
+            cityName={activeCity.name} 
+            lat={activeCity.lat} 
+            lng={activeCity.lng} 
+          />
+        </div>
+
+        {/* Telemetry Extra Metrics Grid */}
+        <div className="bg-spaceCard border border-spaceBorder p-6 flex flex-col justify-between relative">
+          <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-sakuraPink" />
+          <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-sakuraPink" />
           <div>
             <div className="border-b border-spaceBorder pb-3 mb-4">
               <span className="text-[10px] font-mono tracking-widest text-spaceAccent block uppercase">
-                SPACE ENVIRONMENT
+                ATMOSPHERIC INDEX
               </span>
-              <h3 className="text-base font-mono font-bold text-white uppercase">
-                Constellation Status
+              <h3 className="text-base font-sans font-bold text-white uppercase tracking-wider">
+                Propelling Safety Constraints
               </h3>
             </div>
 
             <div className="space-y-3.5 font-mono text-xs">
               <div className="flex justify-between items-center border-b border-spaceBorder/50 pb-2">
-                <span className="text-gray-500">GPS CONSTELLATION</span>
-                <span className="text-spaceSafe font-bold">ACTIVE (31/31)</span>
+                <span className="text-gray-500">ACCURACY DRIFT</span>
+                <span className={`font-bold ${isHighRisk ? 'text-spaceDanger' : 'text-spaceSafe'}`}>
+                  ~{accuracy} METERS
+                </span>
               </div>
               <div className="flex justify-between items-center border-b border-spaceBorder/50 pb-2">
-                <span className="text-gray-500">NavIC STATION LINK</span>
-                <span className="text-spaceSafe font-bold">NOMINAL (7/7)</span>
+                <span className="text-gray-500">CO2 EXTRACTION ENVELOPE</span>
+                <span className="text-spaceSafe font-bold">0.08% [NOMINAL]</span>
               </div>
               <div className="flex justify-between items-center border-b border-spaceBorder/50 pb-2">
-                <span className="text-gray-500">GLONASS DUAL-BAND</span>
-                <span className="text-spaceSafe font-bold">ONLINE (24/24)</span>
+                <span className="text-gray-500">THERMAL ENERGY</span>
+                <span className="text-spaceWarning font-bold">96.4°C [STABLE]</span>
               </div>
               <div className="flex justify-between items-center border-b border-spaceBorder/50 pb-2">
-                <span className="text-gray-500">SOLAR ECLIPSE STATE</span>
-                <span className="text-gray-400">NO SHADOW</span>
+                <span className="text-gray-500">MAGNETOPAUSE CONSTANT</span>
+                <span className="text-gray-400">COMPRESSED</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-gray-500">MAGNETOPAUSE</span>
-                <span className="text-spaceWarning font-bold">COMPRESSED</span>
+                <span className="text-gray-500">BEACON NAVIGATION FREQ</span>
+                <span className="text-spaceSafe font-bold">12 FREQ [LOCKED]</span>
               </div>
             </div>
           </div>
 
           <div className="border-t border-spaceBorder mt-6 pt-4 text-[9px] font-mono text-gray-600">
-            WARNING: IONOSPHERIC SCINTILLATION VARIES HOURLY.
+            SECURE DATUM LINK // WGS-84 ALIGNED
           </div>
         </div>
       </div>
 
       {/* Heatmap Section */}
-      <Heatmap />
+      <div className="relative z-10">
+        <Heatmap />
+      </div>
     </div>
   );
 };

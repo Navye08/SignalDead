@@ -34,7 +34,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
   return (
     <motion.div
-      whileHover={{ y: -2, borderColor: '#66FCF1' }}
+      whileHover={{ y: -2, borderColor: '#FDA4AF' }}
       transition={{ duration: 0.2 }}
       className={`panel-grid-border p-4 bg-spaceCard ${statusBorder} flex flex-col justify-between h-32 relative`}
     >

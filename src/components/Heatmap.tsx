@@ -12,13 +12,13 @@ export const Heatmap = () => {
   const getRiskColor = (risk: 'SAFE' | 'DEGRADED' | 'HIGH RISK') => {
     switch (risk) {
       case 'SAFE':
-        return '#66FCF1'; // Xenon Ice Blue
+        return '#00E5FF'; // Tokyo Cyan
       case 'DEGRADED':
-        return '#F59E0B'; // Astrophage gold
+        return '#FFB300'; // Astrophage Amber
       case 'HIGH RISK':
-        return '#EF4444'; // Solar radiation red
+        return '#E63946'; // Crimson Sun
       default:
-        return '#66FCF1'; // Xenon Ice Blue accent
+        return '#00E5FF';
     }
   };
 
@@ -45,7 +45,7 @@ export const Heatmap = () => {
             <span className="text-gray-400">SCINTILLATION ALERT</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 bg-spaceDanger rounded-full shadow-[0_0_8px_#EF4444]" />
+            <span className="w-2.5 h-2.5 bg-spaceDanger rounded-full shadow-[0_0_8px_#E63946]" />
             <span className="text-gray-400 font-bold">SIGNAL LOSS DANGER</span>
           </div>
         </div>

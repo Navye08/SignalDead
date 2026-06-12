@@ -19,7 +19,11 @@ export const MissionForm = ({ onSubmit, isLoading = false }: MissionFormProps) =
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-spaceCard border border-spaceBorder p-6 flex flex-col justify-between h-full">
+    <form onSubmit={handleSubmit} className="bg-spaceCard border border-spaceBorder p-6 flex flex-col justify-between h-full relative">
+      {/* Physical control panel style decorative cherry blossom corners */}
+      <div className="absolute top-0 left-0 w-1.5 h-1.5 border-t border-l border-sakuraPink" />
+      <div className="absolute bottom-0 right-0 w-1.5 h-1.5 border-b border-r border-sakuraPink" />
+
       <div>
         <div className="border-b border-spaceBorder pb-3 mb-6">
           <span className="text-[10px] font-mono tracking-widest text-spaceAccent block uppercase">
@@ -39,7 +43,7 @@ export const MissionForm = ({ onSubmit, isLoading = false }: MissionFormProps) =
             <select
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full bg-spaceBg border border-spaceBorder p-2.5 font-mono text-sm text-white focus:outline-none focus:border-spaceAccent rounded-none cursor-pointer"
+              className="w-full bg-spaceCard border border-spaceBorder p-2.5 font-mono text-sm text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none cursor-pointer"
             >
               {indianCities.map((c) => (
                 <option key={c.name} value={c.name} className="bg-spaceCard">
@@ -57,7 +61,7 @@ export const MissionForm = ({ onSubmit, isLoading = false }: MissionFormProps) =
             <select
               value={missionType}
               onChange={(e) => setMissionType(e.target.value)}
-              className="w-full bg-spaceBg border border-spaceBorder p-2.5 font-mono text-sm text-white focus:outline-none focus:border-spaceAccent rounded-none cursor-pointer"
+              className="w-full bg-spaceCard border border-spaceBorder p-2.5 font-mono text-sm text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none cursor-pointer"
             >
               {missionTypes.map((m) => (
                 <option key={m.id} value={m.id} className="bg-spaceCard">
@@ -77,7 +81,7 @@ export const MissionForm = ({ onSubmit, isLoading = false }: MissionFormProps) =
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-spaceBg border border-spaceBorder p-2 font-mono text-sm text-white focus:outline-none focus:border-spaceAccent rounded-none cursor-pointer"
+                className="w-full bg-spaceCard border border-spaceBorder p-2 font-mono text-sm text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none cursor-pointer"
               />
             </div>
             <div>
@@ -88,7 +92,7 @@ export const MissionForm = ({ onSubmit, isLoading = false }: MissionFormProps) =
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="w-full bg-spaceBg border border-spaceBorder p-2 font-mono text-sm text-white focus:outline-none focus:border-spaceAccent rounded-none cursor-pointer"
+                className="w-full bg-spaceCard border border-spaceBorder p-2 font-mono text-sm text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none cursor-pointer"
               />
             </div>
           </div>

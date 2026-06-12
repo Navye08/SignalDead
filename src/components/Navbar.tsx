@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { indianCities } from '../services/mockData';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,14 +23,42 @@ export const Navbar = () => {
     return location.pathname.startsWith(path);
   };
 
+  // Determine global system risk based on all active station risks
+  const getGlobalSystemStatus = () => {
+    const hasHighRisk = indianCities.some(c => c.currentRisk === 'HIGH RISK');
+    const hasDegraded = indianCities.some(c => c.currentRisk === 'DEGRADED');
+
+    if (hasHighRisk) {
+      return {
+        text: 'SYSTEM STATUS // BLACKOUT ACTIVE',
+        color: 'text-spaceDanger',
+        dotClass: 'bg-spaceDanger'
+      };
+    } else if (hasDegraded) {
+      return {
+        text: 'SYSTEM STATUS // CAUTION ACTIVE',
+        color: 'text-spaceWarning',
+        dotClass: 'bg-spaceWarning'
+      };
+    } else {
+      return {
+        text: 'SYSTEM STATUS // NOMINAL',
+        color: 'text-spaceSafe',
+        dotClass: 'bg-spaceSafe'
+      };
+    }
+  };
+
+  const sysStatus = getGlobalSystemStatus();
+
   return (
     <nav className="sticky top-0 z-50 bg-spaceBg border-b border-spaceBorder">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Logo and Brand */}
+          {/* Logo and Brand with Cherry Blossom (Sakura) border highlights */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2.5 font-mono font-bold text-white tracking-widest text-lg group">
-              <span className="text-spaceAccent border border-spaceAccent px-2 py-0.5 group-hover:bg-spaceAccent group-hover:text-black transition-colors duration-200">
+              <span className="text-sakuraPink border border-sakuraPink px-2 py-0.5 group-hover:bg-sakuraPink group-hover:text-black transition-colors duration-200">
                 SD
               </span>
               <div className="flex flex-col leading-none">
@@ -39,7 +68,7 @@ export const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation using Tokyo Cyan for active states */}
           <div className="hidden md:flex items-center space-x-6">
             {navLinks.map((link) => (
               <Link
@@ -47,7 +76,7 @@ export const Navbar = () => {
                 to={link.path}
                 className={`font-mono text-xs uppercase tracking-wider py-1 border-b transition-all duration-200 ${
                   isActive(link.path)
-                    ? 'border-spaceAccent text-spaceAccent font-bold'
+                    ? 'border-spaceSafe text-spaceSafe font-bold'
                     : 'border-transparent text-gray-400 hover:text-white hover:border-gray-600'
                 }`}
               >
@@ -56,12 +85,12 @@ export const Navbar = () => {
             ))}
           </div>
 
-          {/* Right Side: Mission Status Indicator */}
+          {/* Right Side: Mission Status Indicator (All Risks summary) */}
           <div className="hidden md:flex items-center gap-3">
             <div className="border border-spaceBorder bg-spaceCard px-3 py-1.5 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-spaceSafe animate-pulse" />
-              <span className="font-mono text-[9px] text-spaceSafe font-bold tracking-widest uppercase">
-                SYSTEM STATUS // NOMINAL
+              <span className={`w-2 h-2 rounded-full ${sysStatus.dotClass} animate-pulse`} />
+              <span className={`font-mono text-[9px] font-bold tracking-widest uppercase ${sysStatus.color}`}>
+                {sysStatus.text}
               </span>
             </div>
           </div>
@@ -70,12 +99,12 @@ export const Navbar = () => {
           <div className="md:hidden flex items-center gap-3">
             {/* Minimal Mobile Status Indicator Icon */}
             <div className="border border-spaceBorder bg-spaceCard p-1.5 flex items-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-spaceSafe animate-pulse" />
+              <span className={`w-1.5 h-1.5 rounded-full ${sysStatus.dotClass} animate-pulse`} />
             </div>
 
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-1.5 border border-spaceBorder text-gray-400 hover:text-white hover:border-spaceAccent transition-colors cursor-pointer"
+              className="p-1.5 border border-spaceBorder text-gray-400 hover:text-white hover:border-spaceSafe transition-colors cursor-pointer"
             >
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -94,7 +123,7 @@ export const Navbar = () => {
                 onClick={() => setIsOpen(false)}
                 className={`block px-3 py-2 border-l-2 ${
                   isActive(link.path)
-                    ? 'border-spaceAccent bg-spaceCard text-spaceAccent font-bold'
+                    ? 'border-spaceSafe bg-spaceCard text-spaceSafe font-bold'
                     : 'border-transparent text-gray-400 hover:text-white hover:bg-spaceCard/30'
                 }`}
               >

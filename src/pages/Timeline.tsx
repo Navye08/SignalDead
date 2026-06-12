@@ -50,7 +50,7 @@ export const Timeline = () => {
             CRITICAL GEOMAGNETIC WEATHER ALERT // FLUX DISSIPATION WINDOW
           </span>
           <p className="text-sm font-mono text-white leading-relaxed">
-            Avoid GPS-dependent maneuvers and heavy Astrophage burns <span className="text-spaceDanger font-bold underline">{dangerWindowString}</span> due to solar wind deflection and predicted signal scintillation.
+            Avoid GPS-dependent maneuvers and heavy propulsion burns <span className="text-spaceDanger font-bold underline">{dangerWindowString}</span> due to solar wind deflection and predicted signal scintillation.
           </p>
         </div>
       </div>
@@ -115,7 +115,7 @@ export const Timeline = () => {
                         {item.riskLevel}
                       </div>
                     </td>
-                    <td className="py-3.5 text-gray-300">{item.kpIndex} Kp</td>
+                    <td className={`py-3.5 ${item.kpIndex >= 7 ? 'glitch-text text-spaceDanger font-bold' : 'text-gray-300'}`}>{item.kpIndex} Kp</td>
                     <td className="py-3.5 text-gray-300">{item.satellites} SATS</td>
                     <td className="py-3.5 text-right">
                       <span className={`inline-block border text-[9px] font-bold px-2 py-0.5 tracking-wider uppercase ${opColor}`}>

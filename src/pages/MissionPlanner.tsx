@@ -72,7 +72,7 @@ export const MissionPlanner = () => {
         </div>
 
         {/* Output Assessment Screen */}
-        <div className="lg:col-span-2 bg-[#111111] border border-spaceBorder p-6 flex flex-col justify-between min-h-[450px] relative">
+        <div className="lg:col-span-2 bg-spaceCard border border-spaceBorder p-6 flex flex-col justify-between min-h-[450px] relative">
           
           {/* Immersive grid crosshairs */}
           <div className="absolute top-2 right-2 text-gray-800 font-mono text-[8px] select-none pointer-events-none text-right">
@@ -175,7 +175,7 @@ export const MissionPlanner = () => {
                       <div className="text-gray-500 text-[9px] uppercase tracking-wider mb-1 flex items-center gap-1">
                         <Activity className="w-3.5 h-3.5 text-spaceAccent" /> Kp index
                       </div>
-                      <div className="text-white font-bold text-sm">{result.kpIndex} Kp</div>
+                      <div className={`font-bold text-sm ${result.kpIndex >= 7 ? 'glitch-text text-spaceDanger font-extrabold' : 'text-white'}`}>{result.kpIndex} Kp</div>
                     </div>
                     <div>
                       <div className="text-gray-500 text-[9px] uppercase tracking-wider mb-1 flex items-center gap-1">

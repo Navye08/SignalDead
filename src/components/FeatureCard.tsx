@@ -11,7 +11,7 @@ interface FeatureCardProps {
 export const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, icon, tag }) => {
   return (
     <motion.div
-      whileHover={{ y: -4, borderColor: '#66FCF1' }}
+      whileHover={{ y: -4, borderColor: '#FDA4AF' }}
       transition={{ duration: 0.2 }}
       className="panel-grid-border bg-spaceCard border border-spaceBorder p-6 flex flex-col justify-between h-56 relative"
     >
