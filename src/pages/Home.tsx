@@ -1,12 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { FeatureCard } from '../components/FeatureCard';
-import { 
-  Activity, 
-  Satellite, 
-  Zap, 
-  Globe
-} from 'lucide-react';
+import { Satellite, Globe } from 'lucide-react';
+
 
 export const Home = () => {
   // Stats data
@@ -167,43 +162,29 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Feature Cards Section */}
-      <section className="space-y-6">
-        <div className="border-b border-spaceBorder pb-3">
-          <span className="text-[10px] font-mono tracking-widest text-spaceAccent block uppercase">
-            OPERATIONAL MODULES
+      {/* Restricted Terminal Gateway Link */}
+      <section className="border border-spaceBorder bg-spaceCard/30 p-6 relative font-mono text-center">
+        <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-sakuraPink" />
+        <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-sakuraPink" />
+        
+        <span className="text-[10px] tracking-widest text-spaceWarning block uppercase mb-2">
+          [RESTRICTED SYSTEM PERIMETER]
+        </span>
+        <h4 className="text-sm font-bold text-white uppercase mb-2">
+          Core Security Capabilities Console
+        </h4>
+        <p className="text-xs text-gray-500 max-w-lg mx-auto mb-6">
+          Accessing this terminal allows diagnostic override of real-time solar tracking, local scintillation calibration models, and direct LEO constellations sky-plots.
+        </p>
+        <Link
+          to="/capabilities"
+          className="inline-flex items-center gap-2 px-6 py-2.5 border border-sakuraPink text-sakuraPink hover:bg-sakuraPink hover:text-black font-bold tracking-widest text-xs uppercase transition-colors duration-200"
+        >
+          <span>Request Terminal Access</span>
+          <span className="text-[8px] bg-sakuraPink/20 text-sakuraPink px-1 py-0.5 rounded border border-sakuraPink/30 font-bold">
+            RESTRICTED
           </span>
-          <h3 className="text-lg font-mono font-bold text-white uppercase">
-            Core Security Capabilities
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <FeatureCard
-            title="24h Prediction Window"
-            description="Anticipate solar winds, Kp index disturbances, and geomagnetic storm phases with hourly resolution."
-            icon={<Zap className="w-5 h-5" />}
-            tag="FORECAST"
-          />
-          <FeatureCard
-            title="Real-Time Risk Analysis"
-            description="Instantaneous correlation of current ionospheric scintillation indices with GNSS signal tracking databases."
-            icon={<Activity className="w-5 h-5" />}
-            tag="ANALYSIS"
-          />
-          <FeatureCard
-            title="Satellite Visibility"
-            description="Geospatial satellite sky-plot predictions. Spot when mountains, buildings, or horizon occlusion drops visibility."
-            icon={<Satellite className="w-5 h-5" />}
-            tag="CONSTELLATION"
-          />
-          <FeatureCard
-            title="India Focused Calibration"
-            description="Engineered specifically to solve low-latitude ionospheric anomalies and equatorial plasma bubbles affecting India."
-            icon={<Globe className="w-5 h-5" />}
-            tag="NAV-IC INTEGRATION"
-          />
-        </div>
+        </Link>
       </section>
     </div>
   );
