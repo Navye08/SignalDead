@@ -14,6 +14,13 @@ export interface MissionType {
   sensitivity: number;
 }
 
+export interface SystemStat {
+  label: string;
+  value: string;
+  unit: string;
+  desc: string;
+}
+
 export interface MissionRiskAssessment {
   riskScore: number;
   riskLevel: 'SAFE' | 'DEGRADED' | 'HIGH RISK';
@@ -35,7 +42,11 @@ export interface TimelineForecastItem {
 }
 
 // Fetch stations and configuration dynamically
-export const fetchStationsData = async (): Promise<{ cities: CityData[]; missionTypes: MissionType[] }> => {
+export const fetchStationsData = async (): Promise<{ 
+  cities: CityData[]; 
+  missionTypes: MissionType[]; 
+  systemStats: SystemStat[]; 
+}> => {
   const response = await fetch('/data/stations.json');
   if (!response.ok) {
     throw new Error('Failed to load dynamic station data from mock endpoints.');

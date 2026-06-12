@@ -17,5 +17,11 @@
     { "id": "trekking", "label": "Trekking & Search/Rescue", "sensitivity": 0.8 },
     { "id": "logistics", "label": "Logistics Fleet", "sensitivity": 0.7 },
     { "id": "aviation", "label": "Aviation Operations", "sensitivity": 1.5 }
+  ],
+  "systemStats": [
+    { "label": "SYSTEM THERMAL CONSTANT", "value": "96.4", "unit": "°C", "desc": "STABLE CONTAINER TEMP" },
+    { "label": "BEACON FREQUENCY CHANNELS", "value": "12", "unit": "FREQ", "desc": "GRID CO-ALIGNMENT ACTIVE" },
+    { "label": "CARBON DIOXIDE EXTRACTION", "value": "0.08", "unit": "%", "desc": "SCRUBBERS NOMINAL" },
+    { "label": "AMBIENT RAD SHIELDING", "value": "0.14", "unit": "RAD", "desc": "LEAD ABSORPTION OK" }
   ]
 }

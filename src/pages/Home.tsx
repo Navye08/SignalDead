@@ -1,16 +1,18 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Satellite, Globe } from 'lucide-react';
-
+import { fetchStationsData } from '../services/api';
+import type { SystemStat } from '../services/api';
 
 export const Home = () => {
-  // Stats data
-  const stats = [
-    { label: 'SYSTEM THERMAL CONSTANT', value: '96.4', unit: '°C', desc: 'STABLE CONTAINER TEMP' },
-    { label: 'BEACON FREQUENCY CHANNELS', value: '12', unit: 'FREQ', desc: 'GRID CO-ALIGNMENT ACTIVE' },
-    { label: 'CARBON DIOXIDE EXTRACTION', value: '0.08', unit: '%', desc: 'SCRUBBERS NOMINAL' },
-    { label: 'AMBIENT RAD SHIELDING', value: '0.14', unit: 'RAD', desc: 'LEAD ABSORPTION OK' },
-  ];
+  const [stats, setStats] = useState<SystemStat[]>([]);
+
+  useEffect(() => {
+    fetchStationsData()
+      .then(data => setStats(data.systemStats))
+      .catch(err => console.error("Error loading stats in Home:", err));
+  }, []);
 
   return (
     <div className="space-y-16">
