@@ -34,7 +34,7 @@ export const Navbar = () => {
               </span>
               <div className="flex flex-col leading-none">
                 <span className="text-sm">SIGNALDEAD</span>
-                <span className="text-[8px] text-gray-500 font-normal tracking-normal">HAIL MARY // ORBIT LINK</span>
+                <span className="text-[8px] text-gray-500 font-normal tracking-normal">COGNITIVE GNSS SYSTEMS</span>
               </div>
             </Link>
           </div>
@@ -61,7 +61,7 @@ export const Navbar = () => {
             <div className="border border-spaceBorder bg-spaceCard px-3 py-1.5 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-spaceSafe animate-pulse" />
               <span className="font-mono text-[9px] text-spaceSafe font-bold tracking-widest uppercase">
-                HAIL MARY // STATUS: NOMINAL
+                SYSTEM STATUS // NOMINAL
               </span>
             </div>
           </div>

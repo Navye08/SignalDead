@@ -103,12 +103,12 @@ export const Dashboard: React.FC = () => {
           description="IONOSPHERIC CHARGE"
         />
         <MetricCard
-          title="ASTROPHAGE DENSITY"
+          title="THERMAL ENERGY CONSTANT"
           value="412"
           unit="ppm"
           status="NEUTRAL"
           icon={<Gauge className="w-4 h-4" />}
-          description="ATMOSPHERIC FUEL PARTICLES"
+          description="IONIZED PROPULSION PARTICLES"
         />
       </div>
 

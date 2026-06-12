@@ -134,17 +134,17 @@ export const Learn = () => {
           ]}
         />
 
-        {/* Card 6: Astrophage & Eridian Physics */}
+        {/* Card 6: LEO Thermal Scattering & Scintillation */}
         <LearnCard
-          title="Astrophage & Eridian Physics // ASTROBIOLOGY"
-          shortDescription="A space-faring single-cell organism that absorbs solar radiation, threatening the sun's luminosity."
-          fullDescription="Discovered by astronomers, Astrophage absorbs solar energy at high rates, causing a gradual dimming of stars. Ryland Grace and the Eridian engineer Rocky cooperated aboard the spaceship Hail Mary to study this organism, resolving its life cycle, thermal properties, and its impact on planet atmospheres. In SignalDead, we monitor atmospheric ionization anomalies that mimic Astrophage flare fields."
+          title="LEO Thermal Scattering & Scintillation // THERMAL INDICES"
+          shortDescription="Understanding how upper-atmospheric temperature fluctuations and electron depletion zones impact LEO propagation pathways."
+          fullDescription="Ionospheric scintillation is heavily driven by thermal dynamics in the thermosphere. High solar flux events trigger thermal expansion and ionization spikes, creating equatorial plasma depletions (bubbles). By correlating thermal constants and carbon dioxide concentrations in the upper atmosphere, we can model electron density fluctuations and predict GNSS signal lockouts. SignalDead maps these thermal-induced scattering indices to forecast operational flight margins."
           icon={<Sun className="w-5 h-5" />}
           technicalDetails={[
-            'Mass-energy conversion factor: E = m * c^2 (via infrared light)',
-            'Optimal storage temperature: 96.4°C (thermal balance)',
-            'Reproductive velocity: Exponential in presence of CO2',
-            'Signature wavelength: 25.9 microns (Eridian beacon band)'
+            'Energy absorption index: Solar constant correlation (flux density)',
+            'Optimal boundary temperature: Nominal LEO thermosphere model',
+            'Scintillation velocity: Logarithmic function of electron density',
+            'Signature wavelength: 25.9 GHz (LEO communication link band)'
           ]}
         />
       </div>

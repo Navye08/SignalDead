@@ -11,10 +11,10 @@ import {
 export const Home = () => {
   // Stats data
   const stats = [
-    { label: 'ASTROPHAGE THERMAL SENSOR', value: '96.4', unit: '°C', desc: 'STABLE CONTAINMENT' },
-    { label: 'ERIDIAN BEACONS LINKED', value: '12', unit: 'FREQ', desc: 'ROCKY CO-ALIGNMENT' },
-    { label: 'CO2 RECOVERY ENVELOPE', value: '0.08', unit: '%', desc: 'SCRUBBERS NOMINAL' },
-    { label: 'AMBIENT RADIATION LEVEL', value: '0.14', unit: 'RAD', desc: 'LEAD SHIELDING OK' },
+    { label: 'SYSTEM THERMAL CONSTANT', value: '96.4', unit: '°C', desc: 'STABLE CONTAINER TEMP' },
+    { label: 'BEACON FREQUENCY CHANNELS', value: '12', unit: 'FREQ', desc: 'GRID CO-ALIGNMENT ACTIVE' },
+    { label: 'CARBON DIOXIDE EXTRACTION', value: '0.08', unit: '%', desc: 'SCRUBBERS NOMINAL' },
+    { label: 'AMBIENT RAD SHIELDING', value: '0.14', unit: 'RAD', desc: 'LEAD ABSORPTION OK' },
   ];
 
   return (
@@ -39,7 +39,7 @@ export const Home = () => {
           >
             <div className="inline-flex items-center gap-2 px-2.5 py-1 border border-spaceAccent/30 bg-spaceAccent/5 font-mono text-[10px] tracking-widest text-spaceAccent uppercase">
               <span className="w-1.5 h-1.5 rounded-full bg-spaceAccent animate-pulse" />
-              PROJECT HAIL MARY COOPERATIVE
+              COOPERATIVE SPACE SAFETY NETWORK
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-mono font-bold tracking-tight text-white leading-tight uppercase">
@@ -52,7 +52,7 @@ export const Home = () => {
             </h1>
 
             <p className="text-sm sm:text-base text-gray-400 max-w-xl leading-relaxed">
-              SignalDead predicts GPS degradation windows using real-time space weather indices, Eridian tracking arrays, and solar wind measurements synchronized between Earth and Erid.
+              SignalDead predicts GPS degradation windows using real-time space weather indices, multi-beacon tracking arrays, and solar wind measurements synchronized across tracking grids.
             </p>
 
             <div className="flex flex-wrap gap-4 pt-4">
@@ -101,7 +101,7 @@ export const Home = () => {
               >
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-spaceBg border border-spaceAccent p-1">
                   <Satellite className="w-4 h-4 text-spaceAccent" />
-                  <span className="absolute -top-6 left-1/2 -translate-x-1/2 font-mono text-[8px] text-spaceAccent whitespace-nowrap">HAIL MARY // SHIP</span>
+                  <span className="absolute -top-6 left-1/2 -translate-x-1/2 font-mono text-[8px] text-spaceAccent whitespace-nowrap">CONSTELLATION // LEO</span>
                 </div>
               </motion.div>
 
@@ -113,7 +113,7 @@ export const Home = () => {
               >
                 <div className="absolute bottom-1/4 right-0 translate-x-1/2 bg-spaceBg border border-spaceSafe p-1">
                   <Satellite className="w-4 h-4 text-spaceSafe" />
-                  <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 font-mono text-[8px] text-spaceSafe whitespace-nowrap">ERID BEACON // ALIGN</span>
+                  <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 font-mono text-[8px] text-spaceSafe whitespace-nowrap">BEACON GRID // ALIGN</span>
                 </div>
               </motion.div>
 
