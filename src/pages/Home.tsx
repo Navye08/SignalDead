@@ -1,19 +1,8 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Satellite, Globe } from 'lucide-react';
-import { fetchStationsData } from '../services/api';
-import type { SystemStat } from '../services/api';
 
 export const Home = () => {
-  const [stats, setStats] = useState<SystemStat[]>([]);
-
-  useEffect(() => {
-    fetchStationsData()
-      .then(data => setStats(data.systemStats))
-      .catch(err => console.error("Error loading stats in Home:", err));
-  }, []);
-
   return (
     <div className="space-y-16">
       {/* Hero Section */}
@@ -121,46 +110,11 @@ export const Home = () => {
 
             {/* Immersive HUD Details */}
             <div className="absolute bottom-2 right-2 border border-spaceBorder bg-spaceCard/90 p-2 text-[8px] font-mono text-gray-500 space-y-0.5 leading-none">
-              <div>GEO_ORBIT: STABLE</div>
+              <div>GEO_ORBIT: STATS_OFFLINE</div>
               <div>SAT_VIS: 12 / GPS+NavIC</div>
               <div>IONO_DRFT: NOMINAL</div>
             </div>
           </motion.div>
-        </div>
-      </section>
-
-      {/* Statistics section */}
-      <section className="space-y-6">
-        <div className="border-b border-spaceBorder pb-3">
-          <span className="text-[10px] font-mono tracking-widest text-spaceAccent block uppercase">
-            SATELLITE DATA LINK
-          </span>
-          <h3 className="text-lg font-mono font-bold text-white uppercase">
-            Live Ionospheric Telemetry
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1, duration: 0.4 }}
-              className="bg-spaceCard border border-spaceBorder p-5 font-mono text-center relative"
-            >
-              {/* Corner decorative bracket */}
-              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-spaceAccent/50" />
-              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-spaceAccent/50" />
-              
-              <div className="text-[9px] text-gray-500 uppercase tracking-widest mb-1.5">{stat.label}</div>
-              <div className="flex items-baseline justify-center gap-1">
-                <span className="text-3xl font-bold text-white tracking-tight">{stat.value}</span>
-                <span className="text-[10px] text-spaceAccent uppercase">{stat.unit}</span>
-              </div>
-              <div className="text-[8px] text-gray-400 mt-2 border-t border-spaceBorder/50 pt-2">{stat.desc}</div>
-            </motion.div>
-          ))}
         </div>
       </section>
     </div>
