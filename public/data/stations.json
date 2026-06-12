@@ -1,0 +1,21 @@
+{
+  "cities": [
+    { "name": "Bengaluru", "lat": 12.9716, "lng": 77.5946, "currentRisk": "SAFE", "riskScore": 18, "satellites": 11, "kpIndex": 3.1 },
+    { "name": "New Delhi", "lat": 28.6139, "lng": 77.2090, "currentRisk": "SAFE", "riskScore": 24, "satellites": 10, "kpIndex": 3.4 },
+    { "name": "Mumbai", "lat": 19.0760, "lng": 72.8777, "currentRisk": "SAFE", "riskScore": 20, "satellites": 11, "kpIndex": 3.2 },
+    { "name": "Kolkata", "lat": 22.5726, "lng": 88.3639, "currentRisk": "DEGRADED", "riskScore": 48, "satellites": 7, "kpIndex": 4.2 },
+    { "name": "Chennai", "lat": 13.0827, "lng": 80.2707, "currentRisk": "SAFE", "riskScore": 22, "satellites": 10, "kpIndex": 3.1 },
+    { "name": "Hyderabad", "lat": 17.3850, "lng": 78.4867, "currentRisk": "SAFE", "riskScore": 19, "satellites": 10, "kpIndex": 3.2 },
+    { "name": "Srinagar", "lat": 34.0837, "lng": 74.7973, "currentRisk": "DEGRADED", "riskScore": 55, "satellites": 6, "kpIndex": 5.1 },
+    { "name": "Guwahati", "lat": 26.1445, "lng": 91.7362, "currentRisk": "HIGH RISK", "riskScore": 78, "satellites": 5, "kpIndex": 6.4 },
+    { "name": "Port Blair", "lat": 11.6234, "lng": 92.7265, "currentRisk": "HIGH RISK", "riskScore": 82, "satellites": 4, "kpIndex": 6.8 },
+    { "name": "Thiruvananthapuram", "lat": 8.5241, "lng": 76.9366, "currentRisk": "SAFE", "riskScore": 25, "satellites": 9, "kpIndex": 3.0 }
+  ],
+  "missionTypes": [
+    { "id": "drone", "label": "Drone Delivery", "sensitivity": 1.2 },
+    { "id": "survey", "label": "Survey Mission", "sensitivity": 1.0 },
+    { "id": "trekking", "label": "Trekking & Search/Rescue", "sensitivity": 0.8 },
+    { "id": "logistics", "label": "Logistics Fleet", "sensitivity": 0.7 },
+    { "id": "aviation", "label": "Aviation Operations", "sensitivity": 1.5 }
+  ]
+}

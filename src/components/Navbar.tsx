@@ -1,11 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
-import { indianCities } from '../services/mockData';
+import { fetchStationsData } from '../services/api';
+import type { CityData } from '../services/api';
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const [cities, setCities] = useState<CityData[]>([]);
+
+  useEffect(() => {
+    fetchStationsData()
+      .then(data => setCities(data.cities))
+      .catch(err => console.error("Error loading system stations in Navbar:", err));
+  }, []);
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -25,8 +33,15 @@ export const Navbar = () => {
 
   // Determine global system risk based on all active station risks
   const getGlobalSystemStatus = () => {
-    const hasHighRisk = indianCities.some(c => c.currentRisk === 'HIGH RISK');
-    const hasDegraded = indianCities.some(c => c.currentRisk === 'DEGRADED');
+    if (cities.length === 0) {
+      return {
+        text: 'SYSTEM STATUS // INITIALIZING',
+        color: 'text-sakuraPink',
+        dotClass: 'bg-sakuraPink'
+      };
+    }
+    const hasHighRisk = cities.some(c => c.currentRisk === 'HIGH RISK');
+    const hasDegraded = cities.some(c => c.currentRisk === 'DEGRADED');
 
     if (hasHighRisk) {
       return {

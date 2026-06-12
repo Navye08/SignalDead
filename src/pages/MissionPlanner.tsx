@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MissionForm } from '../components/MissionForm';
 import { PageHeader } from '../components/PageHeader';
 import { RiskBadge } from '../components/RiskBadge';
-import { calculateMissionRisk } from '../services/mockData';
-import type { MissionRiskAssessment } from '../services/mockData';
+import { calculateMissionRisk, fetchStationsData } from '../services/api';
+import type { MissionRiskAssessment, CityData, MissionType } from '../services/api';
 import { 
   Terminal, 
   Satellite, 
@@ -16,10 +16,21 @@ import {
 } from 'lucide-react';
 
 export const MissionPlanner = () => {
+  const [cities, setCities] = useState<CityData[]>([]);
+  const [missionTypes, setMissionTypes] = useState<MissionType[]>([]);
   const [loading, setLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState(0);
   const [result, setResult] = useState<MissionRiskAssessment | null>(null);
   const [missionInfo, setMissionInfo] = useState<{ city: string; type: string; date: string; time: string } | null>(null);
+
+  useEffect(() => {
+    fetchStationsData()
+      .then(data => {
+        setCities(data.cities);
+        setMissionTypes(data.missionTypes);
+      })
+      .catch(err => console.error("Error loading configs in MissionPlanner:", err));
+  }, []);
 
   const loadingSteps = [
     'INTERROGATING SPACE WEATHER DATABASE // METADATA SEARCH...',
@@ -28,7 +39,7 @@ export const MissionPlanner = () => {
     'GENERATING FLIGHT CORRIDOR SUMMARY // PLOTTING COMPLETE...'
   ];
 
-  const handleCalculate = (city: string, missionType: string, date: string, time: string) => {
+  const handleCalculate = (cityName: string, missionTypeId: string, date: string, time: string) => {
     setLoading(true);
     setResult(null);
     setLoadingStep(0);
@@ -41,9 +52,13 @@ export const MissionPlanner = () => {
         setLoadingStep(step);
       } else {
         clearInterval(interval);
-        const riskResult = calculateMissionRisk(city, missionType, date, time);
-        setResult(riskResult);
-        setMissionInfo({ city, type: missionType, date, time });
+        const targetCity = cities.find(c => c.name === cityName);
+        const targetType = missionTypes.find(m => m.id === missionTypeId);
+        if (targetCity && targetType) {
+          const riskResult = calculateMissionRisk(targetCity, targetType, date, time);
+          setResult(riskResult);
+          setMissionInfo({ city: cityName, type: targetType.label, date, time });
+        }
         setLoading(false);
       }
     }, 450);

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { TimelineForecastItem } from '../services/mockData';
+import type { TimelineForecastItem } from '../services/api';
 
 interface TimelineChartProps {
   data: TimelineForecastItem[];

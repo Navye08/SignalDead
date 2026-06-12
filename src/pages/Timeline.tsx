@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '../components/PageHeader';
 import { TimelineChart } from '../components/TimelineChart';
-import { get24hForecast, indianCities } from '../services/mockData';
-import type { CityData } from '../services/mockData';
+import { get24hForecast, fetchStationsData } from '../services/api';
+import type { CityData } from '../services/api';
 import { 
   AlertOctagon, 
   Clock,
@@ -12,10 +12,17 @@ import {
 } from 'lucide-react';
 
 export const Timeline = () => {
+  const [cities, setCities] = useState<CityData[]>([]);
   const [activeCity, setActiveCity] = useState<CityData | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [locationStatus, setLocationStatus] = useState<'IDLE' | 'LOCKING' | 'LOCKED'>('IDLE');
   const [searchResults, setSearchResults] = useState<CityData[]>([]);
+
+  useEffect(() => {
+    fetchStationsData()
+      .then(data => setCities(data.cities))
+      .catch(err => console.error("Error loading stations in Timeline:", err));
+  }, []);
 
   // Filter autocomplete results
   const handleSearchChange = (query: string) => {
@@ -23,7 +30,7 @@ export const Timeline = () => {
     if (query.trim() === '') {
       setSearchResults([]);
     } else {
-      const matches = indianCities.filter(c => 
+      const matches = cities.filter(c => 
         c.name.toLowerCase().includes(query.toLowerCase())
       );
       setSearchResults(matches);
@@ -39,10 +46,11 @@ export const Timeline = () => {
 
   // Mock navigator geo-location lock
   const handleCurrentLocationLock = () => {
+    if (cities.length === 0) return;
     setLocationStatus('LOCKING');
     setTimeout(() => {
       // Lock onto Bengaluru (default geo location hub)
-      const blr = indianCities.find(c => c.name === 'Bengaluru') || indianCities[0];
+      const blr = cities.find(c => c.name === 'Bengaluru') || cities[0];
       setActiveCity(blr);
       setSearchQuery(blr.name);
       setLocationStatus('LOCKED');

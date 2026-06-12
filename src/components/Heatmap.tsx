@@ -1,6 +1,6 @@
 import { Fragment, useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, Circle, useMap } from 'react-leaflet';
-import type { CityData } from '../services/mockData';
+import type { CityData } from '../services/api';
 import 'leaflet/dist/leaflet.css';
 
 interface HeatmapProps {

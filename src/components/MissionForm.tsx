@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { indianCities, missionTypes } from '../services/mockData';
+import { useState, useEffect } from 'react';
+import { fetchStationsData } from '../services/api';
+import type { CityData, MissionType } from '../services/api';
 import { Crosshair, Calendar, Clock, MapPin, Shield } from 'lucide-react';
 
 interface MissionFormProps {
@@ -8,15 +9,36 @@ interface MissionFormProps {
 }
 
 export const MissionForm = ({ onSubmit, isLoading = false }: MissionFormProps) => {
-  const [city, setCity] = useState(indianCities[0].name);
-  const [missionType, setMissionType] = useState(missionTypes[0].id);
+  const [cities, setCities] = useState<CityData[]>([]);
+  const [missionTypes, setMissionTypes] = useState<MissionType[]>([]);
+  const [city, setCity] = useState('');
+  const [missionType, setMissionType] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [time, setTime] = useState('14:00'); // Default to peak scintillation hour
 
+  useEffect(() => {
+    fetchStationsData()
+      .then(data => {
+        setCities(data.cities);
+        setMissionTypes(data.missionTypes);
+        if (data.cities.length > 0) {
+          setCity(data.cities[0].name);
+        }
+        if (data.missionTypes.length > 0) {
+          setMissionType(data.missionTypes[0].id);
+        }
+      })
+      .catch(err => console.error("Error loading mission configurations:", err));
+  }, []);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(city, missionType, date, time);
+    if (city && missionType) {
+      onSubmit(city, missionType, date, time);
+    }
   };
+
+  const isConfigLoaded = cities.length > 0 && missionTypes.length > 0;
 
   return (
     <form onSubmit={handleSubmit} className="bg-spaceCard border border-spaceBorder p-6 flex flex-col justify-between h-full relative">
@@ -43,13 +65,18 @@ export const MissionForm = ({ onSubmit, isLoading = false }: MissionFormProps) =
             <select
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full bg-spaceCard border border-spaceBorder p-2.5 font-mono text-sm text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none cursor-pointer"
+              disabled={!isConfigLoaded}
+              className="w-full bg-spaceCard border border-spaceBorder p-2.5 font-mono text-sm text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none cursor-pointer disabled:opacity-50"
             >
-              {indianCities.map((c) => (
-                <option key={c.name} value={c.name} className="bg-spaceCard">
-                  {c.name} (LAT: {c.lat.toFixed(2)}, LNG: {c.lng.toFixed(2)})
-                </option>
-              ))}
+              {!isConfigLoaded ? (
+                <option>Loading stations...</option>
+              ) : (
+                cities.map((c) => (
+                  <option key={c.name} value={c.name} className="bg-spaceCard">
+                    {c.name} (LAT: {c.lat.toFixed(2)}, LNG: {c.lng.toFixed(2)})
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
@@ -61,13 +88,18 @@ export const MissionForm = ({ onSubmit, isLoading = false }: MissionFormProps) =
             <select
               value={missionType}
               onChange={(e) => setMissionType(e.target.value)}
-              className="w-full bg-spaceCard border border-spaceBorder p-2.5 font-mono text-sm text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none cursor-pointer"
+              disabled={!isConfigLoaded}
+              className="w-full bg-spaceCard border border-spaceBorder p-2.5 font-mono text-sm text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none cursor-pointer disabled:opacity-50"
             >
-              {missionTypes.map((m) => (
-                <option key={m.id} value={m.id} className="bg-spaceCard">
-                  {m.label}
-                </option>
-              ))}
+              {!isConfigLoaded ? (
+                <option>Loading objectives...</option>
+              ) : (
+                missionTypes.map((m) => (
+                  <option key={m.id} value={m.id} className="bg-spaceCard">
+                    {m.label}
+                  </option>
+                ))
+              )}
             </select>
           </div>
 
@@ -81,7 +113,8 @@ export const MissionForm = ({ onSubmit, isLoading = false }: MissionFormProps) =
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-spaceCard border border-spaceBorder p-2 font-mono text-sm text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none cursor-pointer"
+                disabled={!isConfigLoaded}
+                className="w-full bg-spaceCard border border-spaceBorder p-2 font-mono text-sm text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none cursor-pointer disabled:opacity-50"
               />
             </div>
             <div>
@@ -92,7 +125,8 @@ export const MissionForm = ({ onSubmit, isLoading = false }: MissionFormProps) =
                 type="time"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="w-full bg-spaceCard border border-spaceBorder p-2 font-mono text-sm text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none cursor-pointer"
+                disabled={!isConfigLoaded}
+                className="w-full bg-spaceCard border border-spaceBorder p-2 font-mono text-sm text-white focus:outline-none focus:border-sakuraPink focus:ring-1 focus:ring-sakuraPink rounded-none cursor-pointer disabled:opacity-50"
               />
             </div>
           </div>
@@ -102,7 +136,7 @@ export const MissionForm = ({ onSubmit, isLoading = false }: MissionFormProps) =
       <div className="mt-8 border-t border-spaceBorder pt-4">
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || !isConfigLoaded}
           className="w-full bg-spaceAccent/10 hover:bg-spaceAccent border border-spaceAccent text-spaceAccent hover:text-black py-3 font-mono font-bold tracking-widest text-xs uppercase transition-all duration-200 flex items-center justify-center gap-2 rounded-none group disabled:opacity-50"
         >
           <Crosshair className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
