@@ -1,12 +1,25 @@
-import { Fragment } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, Circle } from 'react-leaflet';
-import { indianCities } from '../services/mockData';
+import { Fragment, useEffect } from 'react';
+import { MapContainer, TileLayer, CircleMarker, Popup, Circle, useMap } from 'react-leaflet';
 import type { CityData } from '../services/mockData';
 import 'leaflet/dist/leaflet.css';
 
-export const Heatmap = () => {
-  // Coordinates to center on India
-  const indiaCenter: [number, number] = [20.5937, 78.9629];
+interface HeatmapProps {
+  activeCity?: CityData | null;
+}
+
+// Sub-component to smoothly pan map on activeCity changes
+const MapRecenter = ({ center }: { center: [number, number] }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(center, 5.5, { animate: true });
+  }, [center, map]);
+  return null;
+};
+
+export const Heatmap = ({ activeCity }: HeatmapProps) => {
+  // Coordinates to center on India by default
+  const defaultCenter: [number, number] = [20.5937, 78.9629];
+  const activeCenter: [number, number] = activeCity ? [activeCity.lat, activeCity.lng] : defaultCenter;
   const defaultZoom = 5;
 
   const getRiskColor = (risk: 'SAFE' | 'DEGRADED' | 'HIGH RISK') => {
@@ -53,74 +66,73 @@ export const Heatmap = () => {
 
       <div className="h-[450px] w-full border border-spaceBorder relative z-10">
         <MapContainer 
-          center={indiaCenter} 
+          center={defaultCenter} 
           zoom={defaultZoom} 
           scrollWheelZoom={false}
           className="h-full w-full"
           zoomControl={true}
         >
+          {/* Recenter helper */}
+          <MapRecenter center={activeCenter} />
+
           {/* CartoDB Dark Matter tile layer for premium dark theme */}
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
           />
 
-          {indianCities.map((city: CityData) => {
-            const riskColor = getRiskColor(city.currentRisk);
-            
-            return (
-              <Fragment key={city.name}>
-                {/* Visual halo representing scintillation coverage */}
-                <Circle
-                  center={[city.lat, city.lng]}
-                  radius={city.currentRisk === 'HIGH RISK' ? 180000 : city.currentRisk === 'DEGRADED' ? 100000 : 50000}
-                  pathOptions={{
-                    color: riskColor,
-                    fillColor: riskColor,
-                    fillOpacity: city.currentRisk === 'SAFE' ? 0.02 : 0.08,
-                    weight: 1,
-                    dashArray: '5, 5'
-                  }}
-                />
+          {activeCity && (
+            <Fragment key={activeCity.name}>
+              {/* Visual halo representing scintillation coverage */}
+              <Circle
+                center={[activeCity.lat, activeCity.lng]}
+                radius={activeCity.currentRisk === 'HIGH RISK' ? 180000 : activeCity.currentRisk === 'DEGRADED' ? 100000 : 50000}
+                pathOptions={{
+                  color: getRiskColor(activeCity.currentRisk),
+                  fillColor: getRiskColor(activeCity.currentRisk),
+                  fillOpacity: activeCity.currentRisk === 'SAFE' ? 0.02 : 0.08,
+                  weight: 1,
+                  dashArray: '5, 5'
+                }}
+              />
 
-                {/* City target blip */}
-                <CircleMarker
-                  center={[city.lat, city.lng]}
-                  radius={city.currentRisk === 'HIGH RISK' ? 8 : 6}
-                  pathOptions={{
-                    color: '#111111',
-                    fillColor: riskColor,
-                    fillOpacity: 1,
-                    weight: 1.5,
-                  }}
-                >
-                  <Popup>
-                    <div className="font-mono text-xs p-1">
-                      <div className="text-spaceAccent border-b border-spaceBorder pb-1 mb-2 font-bold uppercase">
-                        STATION: {city.name}
-                      </div>
-                      <div className="flex justify-between gap-4 mb-1">
-                        <span className="text-gray-400">RISK STATE:</span>
-                        <span style={{ color: riskColor }} className="font-bold uppercase">{city.currentRisk}</span>
-                      </div>
-                      <div className="flex justify-between gap-4 mb-1">
-                        <span className="text-gray-400">RISK INDEX:</span>
-                        <span className="text-white font-bold">{city.riskScore}%</span>
-                      </div>
-                      <div className="flex justify-between gap-4 mb-1">
-                        <span className="text-gray-400">KP INDEX:</span>
-                        <span className="text-white font-bold">{city.kpIndex}</span>
-                      </div>
-                      <div className="flex justify-between gap-4">
-                        <span className="text-gray-400">SATELLITES:</span>
-                        <span className="text-white font-bold">{city.satellites}</span>
-                      </div>
+              {/* City target blip */}
+              <CircleMarker
+                center={[activeCity.lat, activeCity.lng]}
+                radius={activeCity.currentRisk === 'HIGH RISK' ? 8 : 6}
+                pathOptions={{
+                  color: '#111111',
+                  fillColor: getRiskColor(activeCity.currentRisk),
+                  fillOpacity: 1,
+                  weight: 1.5,
+                }}
+              >
+                <Popup>
+                  <div className="font-mono text-xs p-1">
+                    <div className="text-spaceAccent border-b border-spaceBorder pb-1 mb-2 font-bold uppercase">
+                      STATION: {activeCity.name}
                     </div>
-                  </Popup>
-                </CircleMarker>
-              </Fragment>
-            );
-          })}
+                    <div className="flex justify-between gap-4 mb-1">
+                      <span className="text-gray-400">RISK STATE:</span>
+                      <span style={{ color: getRiskColor(activeCity.currentRisk) }} className="font-bold uppercase">{activeCity.currentRisk}</span>
+                    </div>
+                    <div className="flex justify-between gap-4 mb-1">
+                      <span className="text-gray-400">RISK INDEX:</span>
+                      <span className="text-white font-bold">{activeCity.riskScore}%</span>
+                    </div>
+                    <div className="flex justify-between gap-4 mb-1">
+                      <span className="text-gray-400">KP INDEX:</span>
+                      <span className="text-white font-bold">{activeCity.kpIndex}</span>
+                    </div>
+                    <div className="flex justify-between gap-4">
+                      <span className="text-gray-400">SATELLITES:</span>
+                      <span className="text-white font-bold">{activeCity.satellites}</span>
+                    </div>
+                  </div>
+                </Popup>
+              </CircleMarker>
+            </Fragment>
+          )}
         </MapContainer>
         
         {/* Technical Coordinate Overlay Grid info (decorative but immersive) */}

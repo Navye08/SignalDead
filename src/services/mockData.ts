@@ -65,33 +65,35 @@ export const indianCities: CityData[] = [
   { name: 'Thiruvananthapuram', lat: 8.5241, lng: 76.9366, currentRisk: 'SAFE', riskScore: 25, satellites: 9, kpIndex: 3.0 },
 ];
 
-// 24 Hour forecast generator
-export const get24hForecast = (): TimelineForecastItem[] => {
+// 24 Hour forecast generator based on city risk profile
+export const get24hForecast = (cityRiskScore: number): TimelineForecastItem[] => {
   const hours = [
     '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00',
     '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00',
     '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00'
   ];
 
-  // Deterministic forecast with a peak of geomagnetic activity around 14:00 - 18:00
+  const riskFactor = cityRiskScore / 100; // ranges from 0.18 to 0.82
+
+  // Deterministic forecast with a peak of geomagnetic activity around 14:00 - 18:00, scaled by the city's risk profile
   return hours.map((hour, idx) => {
-    let kp = 2.0 + Math.sin((idx / 24) * Math.PI * 2) * 1.5;
+    let kp = (1.5 + Math.sin((idx / 24) * Math.PI * 2) * 1.5) * (0.6 + riskFactor * 1.0);
     // Add peak in afternoon
     if (idx >= 13 && idx <= 18) {
-      kp += 3.5;
+      kp += 3.5 * (0.8 + riskFactor * 0.4);
     }
     kp = Math.max(1.0, Math.min(9.0, Number(kp.toFixed(1))));
 
-    let satellites = Math.round(10 - (kp - 2) * 0.8);
+    let satellites = Math.round(11 - (kp - 1) * 0.8);
     satellites = Math.max(4, Math.min(14, satellites));
 
-    const pdop = Number((1.2 + (10 - satellites) * 0.4).toFixed(1));
-    const riskScore = Math.round((kp / 9) * 60 + (pdop / 5) * 40);
+    const pdop = Number((1.2 + (12 - satellites) * 0.35).toFixed(1));
+    const computedScore = Math.min(100, Math.round((kp / 9) * 55 + (pdop / 5) * 45));
 
     let riskLevel: 'SAFE' | 'DEGRADED' | 'HIGH RISK' = 'SAFE';
-    if (riskScore >= 70) {
+    if (computedScore >= 70) {
       riskLevel = 'HIGH RISK';
-    } else if (riskScore >= 40) {
+    } else if (computedScore >= 40) {
       riskLevel = 'DEGRADED';
     }
 
@@ -99,7 +101,7 @@ export const get24hForecast = (): TimelineForecastItem[] => {
       time: hour,
       kpIndex: kp,
       satellites,
-      riskScore,
+      riskScore: computedScore,
       riskLevel
     };
   });
